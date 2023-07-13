@@ -19,14 +19,11 @@ class FaceBookBot():
 
     def post_content(self):
         REQUEST_URL = f'https://mbasic.facebook.com/story.php?story_fbid={self.post_ID}&id=415518858611168'
-        
+
         soup = BeautifulSoup(self.parse_html(REQUEST_URL).content, "html.parser")
         content = soup.find_all('p')
-        post_content = []
-        for lines in content:
-            post_content.append(lines.text)
-        
-        post_content = ' '.join(post_content)    
+        post_content = [lines.text for lines in content]
+        post_content = ' '.join(post_content)
         return post_content
 
     def date_posted(self):
@@ -42,23 +39,18 @@ class FaceBookBot():
 
         soup = BeautifulSoup(self.parse_html(REQUEST_URL).content, "html.parser")
         names = soup.find_all('h3')
-        people_who_liked = []
-        for name in names:
-            people_who_liked.append(name.text)
-        people_who_liked = [i for i in people_who_liked if i] 
+        people_who_liked = [name.text for name in names]
+        people_who_liked = [i for i in people_who_liked if i]
         return people_who_liked
 
     def post_shares(self):        
         REQUEST_URL = f'https://m.facebook.com/browse/shares?id={self.post_ID}'
-        
+
         with requests.Session() as session:
             post = session.post(self.login_mobile_url, data=self.payload)
             parsed_html = session.get(REQUEST_URL)
-        
+
         soup = BeautifulSoup(parsed_html.content, "html.parser")
         names = soup.find_all('span')
-        people_who_shared = []
-        for name in names:
-            people_who_shared.append(name.text)
-        return people_who_shared
+        return [name.text for name in names]
 

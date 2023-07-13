@@ -64,11 +64,7 @@ class FaceBookBot():
             r = session.get(REQUEST_URL)
         soup = BeautifulSoup(r.content, "html.parser")
         names = soup.find_all('h3', class_='be')
-        people_who_liked = []
-        for name in names:
-            people_who_liked.append(name.text)
-
-        return people_who_liked
+        return [name.text for name in names]
 
     def post_shares(self):
         #This URL will be the URL that your login form points to with the "action" tag.
@@ -88,11 +84,7 @@ class FaceBookBot():
             r = session.get(REQUEST_URL)
         soup = BeautifulSoup(r.content, "html.parser")
         names = soup.find_all('span')
-        people_who_shared = []
-        for name in names:
-            people_who_shared.append(name.text)
-
-        return people_who_shared
+        return [name.text for name in names]
 
     def page_likes(self):
         self.login(username, password)
@@ -105,25 +97,17 @@ class FaceBookBot():
 
         sleep(2)
 
-        for i in range(1,15):
+        for _ in range(1,15):
             self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             sleep(3)
 
         page = self.driver.page_source
         soup = BeautifulSoup(page, "html.parser")
         names = soup.find_all('a', class_='_3cb8')
-        people_who_liked_page = []
-        for name in names:
-            people_who_liked_page.append(name.text)
-
-        return people_who_liked_page
+        return [name.text for name in names]
 
     def select_winner(self,list_A,list_B,list_C):
-        eligible_to_win = []
-        for name in list_A:
-            if name in list_B and name in list_C:
-                eligible_to_win.append(name)
-        return eligible_to_win
+        return [name for name in list_A if name in list_B and name in list_C]
 
 bot = FaceBookBot()
 people_who_follow = bot.page_likes()
